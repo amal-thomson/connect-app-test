@@ -29,7 +29,7 @@ export const post = async (request: Request, response: Response) => {
 
         if (productId && imageUrl) {
             const attributes: ProductAttribute[] = jsonData.productProjection?.masterVariant?.attributes || [];
-            const genDescriptionAttr = attributes.find(attr => attr.name === 'gen-description');
+            const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
             const genDescriptionValue = genDescriptionAttr?.value;
 
             if (genDescriptionValue !== 'true') {
