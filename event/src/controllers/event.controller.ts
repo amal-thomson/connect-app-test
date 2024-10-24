@@ -28,11 +28,19 @@ export const post = async (request: Request, response: Response) => {
         const imageUrl = jsonData.productProjection?.masterVariant?.images?.[0]?.url;
 
         if (productId && imageUrl) {
-            const attributes: ProductAttribute[] = jsonData.productProjection?.masterVariant?.attributes || [];
-            const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
-            const genDescriptionValue = genDescriptionAttr?.value;
+            const attributes: ProductAttribute[] = jsonData.productProjection?.attributes || [];
 
-            if (genDescriptionValue !== 'true') {
+            if (!attributes || attributes.length === 0) {
+                logger.error('❌ No attributes found in the product data.');
+                return response.status(400).send({
+                    error: '❌ No attributes found in the product data.',
+                });
+            }
+
+            const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
+            const isGenerateDescriptionEnabled = Boolean(genDescriptionAttr?.value);
+
+            if (!isGenerateDescriptionEnabled) {
                 logger.info('❌ The option for automatic description generation is not enabled.', { productId, imageUrl });
                 return response.status(200).send({
                     message: '❌ The option for automatic description generation is not enabled.',
@@ -58,7 +66,7 @@ export const post = async (request: Request, response: Response) => {
                 imageUrl,
                 description,
                 productAnalysis: imageData,
-                commerceToolsUpdate: updateResponse.body
+                commerceToolsUpdate: updateResponse.body,
             });
         }
         
