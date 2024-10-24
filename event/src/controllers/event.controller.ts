@@ -27,16 +27,17 @@ export const post = async (request: Request, response: Response) => {
         const productId = jsonData.productProjection?.id;
         const imageUrl = jsonData.productProjection?.masterVariant?.images?.[0]?.url;
 
-        if (productId && imageUrl) {
-            const attributes: ProductAttribute[] = jsonData.productProjection?.attributes || [];
 
+        if (productId && imageUrl) {
+            const attributes: ProductAttribute[] = jsonData.productProjection?.masterVariant?.attributes || [];
+            
             if (!attributes || attributes.length === 0) {
                 logger.error('❌ No attributes found in the product data.');
                 return response.status(400).send({
                     error: '❌ No attributes found in the product data.',
                 });
             }
-
+            
             const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
             const isGenerateDescriptionEnabled = Boolean(genDescriptionAttr?.value);
 
