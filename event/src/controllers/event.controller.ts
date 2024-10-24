@@ -28,18 +28,18 @@ export const post = async (request: Request, response: Response) => {
         const imageUrl = jsonData.productProjection?.masterVariant?.images?.[0]?.url;
 
         if (productId && imageUrl) {
-            // const attributes: ProductAttribute[] = jsonData.productProjection?.masterVariant?.attributes || [];
-            // const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
-            // const genDescriptionValue = genDescriptionAttr?.value;
+            const attributes: ProductAttribute[] = jsonData.productProjection?.masterVariant?.attributes || [];
+            const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
+            const genDescriptionValue = genDescriptionAttr?.value;
 
-            // if (genDescriptionValue !== 'true') {
-            //     logger.info('❌ The option for automatic description generation is not enabled.', { productId, imageUrl });
-            //     return response.status(200).send({
-            //         message: '❌ The option for automatic description generation is not enabled.',
-            //         productId,
-            //         imageUrl,
-            //     });
-            // }
+            if (genDescriptionValue !== 'true') {
+                logger.info('❌ The option for automatic description generation is not enabled.', { productId, imageUrl });
+                return response.status(200).send({
+                    message: '❌ The option for automatic description generation is not enabled.',
+                    productId,
+                    imageUrl,
+                });
+            }
 
             logger.info('✅ Sending product image to Vision AI.');
             const imageData = await productAnalysis(imageUrl);
@@ -119,7 +119,7 @@ export const post = async (request: Request, response: Response) => {
 //         }
 
 //         const attributes: ProductAttribute[] = jsonData?.productProjection?.masterVariant?.attributes || [];
-//         const genDescriptionAttr = attributes.find(attr => attr.name === 'gen-description');
+//         const genDescriptionAttr = attributes.find(attr => attr.name === 'generateDescription');
 //         const genDescriptionValue = genDescriptionAttr?.value;
 
 //         // if (genDescriptionValue !== 'true') {
